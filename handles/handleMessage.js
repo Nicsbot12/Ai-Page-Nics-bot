@@ -13,7 +13,7 @@ for (const file of commandFiles) {
 
 async function handleMessage(event, pageAccessToken) {
   const senderId = event.sender.id;
-  const messageText = event.message.toLowerCase();
+  const messageText = event.message.text.trim();
 
   if (messageText.startsWith(prefix)) {
     const args = messageText.slice(prefix.length).split(' ');
