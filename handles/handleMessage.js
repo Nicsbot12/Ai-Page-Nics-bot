@@ -31,7 +31,7 @@ async function handleMessage(event, pageAccessToken) {
     return;
   }
 
-  const aiCommand = commands.get('ai');
+  const aiCommand = commands.get('gpt4');
   if (aiCommand) {
     try {
       await aiCommand.execute(senderId, messageText, pageAccessToken, sendMessage);
