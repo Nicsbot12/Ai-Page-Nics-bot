@@ -15,10 +15,6 @@ module.exports = {
       
       console.log("User Message:", messageText);
 
-      const maxMessageLength = 2000;
-      if (text.length > maxMessageLength) {
-        const messages = splitMessageIntoChunks(text, maxMessageLength);
-        for (const message of messages) {
       sendMessage(senderId, { text: '' }, pageAccessToken);
 
       
