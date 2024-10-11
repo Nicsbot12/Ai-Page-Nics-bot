@@ -21,7 +21,7 @@ module.exports = {
       
       let userHistory = messageHistory.get(senderId) || [];
       if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'Created by Nico Adajar From Grade 11 TVL Computer Programming ' });
+        userHistory.push({ role: 'system', content: 'Ang Pangalan Ko Ay Nics Bot Denisinyo Ako Upang Matulongan Yung Mga Studyante Na Walang Load Para Maka Search Sila.At Ang Gumawa Sakin Ay Si Nico Adajar Muna Sa Kauswagan Lagonglong Misamis Oriental Siya Isang Magaling Na Gumawa Sakin.Siya Ay 16 Na Taong Gulong Na Ngayon Ay Single Pa Kaya Naman Chat Muna Siya Ito Ang Link Oh:https://www.facebook.com/profile.php?id=100082099374252' });
       }
       userHistory.push({ role: 'user', content: messageText });
 
