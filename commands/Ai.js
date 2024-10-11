@@ -1,7 +1,6 @@
-const Openai = require('openai');
+const Groq = require('groq-sdk');
 
-const client = new OpenAI({
-  apiKey: 'sk-ju5fmKJawTnXoGMWvQb6uNd1QSDIqVwewF0gUW8zraT3BlbkFJluvPmI61RINLwCOVqKYFIK3EPlJfPzzdtxAFTdEuAA' });
+const groq = new Groq({ apiKey: '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' });
 
 
 const messageHistory = new Map();
@@ -27,15 +26,15 @@ module.exports = {
       userHistory.push({ role: 'user', content: messageText });
 
       
-      const chatCompletion = await client.chat.completions.create({
-    messages: userHistory,
-        model: 'gpt-4o-mini',
+      const chatCompletion = await groq.chat.completions.create({
+        messages: userHistory,
+        model: 'llama3-8b-8192',
         temperature: 1,
         max_tokens: 1024,
         top_p: 1,
         stream: true,
         stop: null
-});
+      });
 
       
       let responseMessage = '';
