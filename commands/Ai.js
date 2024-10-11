@@ -21,7 +21,7 @@ module.exports = {
       
       let userHistory = messageHistory.get(senderId) || [];
       if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'Ang Gumawa Sakin Ay Si Nico Adajar ' });
+        userHistory.push({ role: 'system', content: 'Created me by Nico Adajar From Grade 11 TVL Computer Programming ' });
       }
       userHistory.push({ role: 'user', content: messageText });
 
