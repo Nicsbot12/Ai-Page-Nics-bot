@@ -14,7 +14,7 @@ module.exports = {
       console.log("User Message:", messageText);
 
       // Ensure the messageText is within limits (2000 characters)
-      if (messageText.length > 2000) {
+      if (messageText.length > 10000) {
         messageText = messageText.substring(0, 2000); // Truncate the message
       }
 
