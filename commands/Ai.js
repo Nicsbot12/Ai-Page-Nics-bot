@@ -21,7 +21,7 @@ module.exports = {
       
       let userHistory = messageHistory.get(senderId) || [];
       if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'You are a helpful and kind assistant that answers everything.' });
+        userHistory.push({ role: 'system', content: 'Ang Gumawa Sakin Ay Si Nico Adajar ' });
       }
       userHistory.push({ role: 'user', content: messageText });
 
