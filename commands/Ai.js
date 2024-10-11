@@ -3,7 +3,7 @@ const Groq = require('groq-sdk');
 const groq = new Groq({ apiKey:'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'});
 
 const messageHistory = new Map();
-const maxMessageLength = 10000;
+const maxMessageLength = 2000;
 
 // Function to split a message into chunks of specified length
 function splitMessageIntoChunks(text, maxLength) {
