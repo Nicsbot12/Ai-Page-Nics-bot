@@ -15,7 +15,7 @@ module.exports = {
 
       // Ensure the messageText is within limits (2000 characters)
       if (messageText.length > 10000) {
-        messageText = messageText.substring(0, 2000); // Truncate the message
+        messageText = messageText.substring(0, 10000); // Truncate the message
       }
 
       sendMessage(senderId, { text: '' }, pageAccessToken);
