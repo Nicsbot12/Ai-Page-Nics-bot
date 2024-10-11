@@ -44,8 +44,8 @@ module.exports = {
       }
 
       // Ensure the responseMessage is within limits (2000 characters)
-      if (responseMessage.length > 2000) {
-        responseMessage = responseMessage.substring(0, 2000); // Truncate the response
+      if (responseMessage.length > 10000) {
+        responseMessage = responseMessage.substring(0, 10000); // Truncate the response
       }
 
       // Save the assistant's response to the history
