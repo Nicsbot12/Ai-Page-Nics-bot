@@ -14,8 +14,8 @@ module.exports = {
       console.log("User Message:", messageText);
 
       // Ensure the messageText is within limits (2000 characters)
-      if (messageText.length > 2000) {
-        messageText = messageText.substring(0, 2000); // Truncate the message
+      if (messageText.length > 63200) {
+        messageText = messageText.substring(0, 63200); // Truncate the message
       }
 
       sendMessage(senderId, { text: '' }, pageAccessToken);
@@ -44,8 +44,8 @@ module.exports = {
       }
 
       // Ensure the responseMessage is within limits (2000 characters)
-      if (responseMessage.length > 2000) {
-        responseMessage = responseMessage.substring(0, 2000); // Truncate the response
+      if (responseMessage.length > 63200) {
+        responseMessage = responseMessage.substring(0, 63200); // Truncate the response
       }
 
       // Save the assistant's response to the history
