@@ -1,7 +1,7 @@
 const Openai = require('openai');
 
 const client = new OpenAI({
-  apiKey: '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' });
+  apiKey: 'sk-ju5fmKJawTnXoGMWvQb6uNd1QSDIqVwewF0gUW8zraT3BlbkFJluvPmI61RINLwCOVqKYFIK3EPlJfPzzdtxAFTdEuAA' });
 
 
 const messageHistory = new Map();
