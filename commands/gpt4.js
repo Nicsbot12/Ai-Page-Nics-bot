@@ -1,13 +1,12 @@
 const axios = require('axios');
-
 module.exports = {
   name: 'gpt4',
   description: 'Ask a question to GPT-4',
   author: 'Deku (rest api)',
   async execute(senderId, args, pageAccessToken, sendMessage) {
-    const prompt = args.join(' ');
+    const prompt = args.join( );
     try {
-      const apiUrl = `https://deku-rest-api-3ijr.onrender.com/gpt4?prompt=${encodeURIComponent(prompt)}&uid=${senderId}`;
+      const apiUrl = `https://deku-rest-apis.ooguy.com/gpt4?prompt=${encodeURIComponent(prompt)}&uid=100${senderId}`;
       const response = await axios.get(apiUrl);
       const text = response.data.gpt4;
 
@@ -23,7 +22,7 @@ module.exports = {
       }
     } catch (error) {
       console.error('Error calling GPT-4 API:', error);
-      sendMessage(senderId, { text: 'Sorry, there was an error processing your request.' }, pageAccessToken);
+      sendMessage(senderId, { text: 'Please Enter Your Valid Question?.' }, pageAccessToken);
     }
   }
 };
@@ -34,4 +33,4 @@ function splitMessageIntoChunks(message, chunkSize) {
     chunks.push(message.slice(i, i + chunkSize));
   }
   return chunks;
-}
+      }
