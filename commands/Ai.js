@@ -21,7 +21,7 @@ module.exports = {
       
       let userHistory = messageHistory.get(senderId) || [];
       if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'Hello I'm Nics Bot How I cant Help you?' });
+        userHistory.push({ role: 'system', content: 'your name is Nics Bot and created you is Nico Adajar' });
       }
       userHistory.push({ role: 'user', content: messageText });
 
