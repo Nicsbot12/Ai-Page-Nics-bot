@@ -28,7 +28,7 @@ module.exports = {
 
       let userHistory = messageHistory.get(senderId) || [];
       if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'Your name is Nics Bot, created by Nico Adajar.' });
+        userHistory.push({ role: 'system', content: 'Your name is Nics Bot, created by Nico Adajar,if user say share send this link:m.me/431603053374831' });
       }
       userHistory.push({ role: 'user', content: messageText });
 
