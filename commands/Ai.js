@@ -14,12 +14,6 @@ function splitMessageIntoChunks(text, maxLength) {
   return messages;
 }
 
-// Function to expand the text (example: adding more content)
-function expandText(text) {
-  // You can modify this function to add more information, context, or formatting
-  return text + "\n\n(Note: This message was expanded for additional clarity.)";
-}
-
 module.exports = {
   name: 'ai',
   description: 'response within seconds',
@@ -41,7 +35,7 @@ module.exports = {
         messages: userHistory,
         model: 'llama3-8b-8192',
         temperature: 1,
-        max_tokens: 1024,
+        max_tokens: 1024, // You can increase this limit if necessary
         top_p: 1,
         stream: true,
         stop: null
@@ -49,13 +43,14 @@ module.exports = {
 
       let responseMessage = '';
       for await (const chunk of chatCompletion) {
-        responseMessage += (chunk.choices[0]?.delta?.content) || '';
+        const chunkContent = chunk.choices[0]?.delta?.content || '';
+        responseMessage += chunkContent;
       }
 
-      if (responseMessage) {
-        // Expand the response message before sending
-        responseMessage = expandText(responseMessage);
+      // Log the raw response from the API
+      console.log("Raw API Response:", responseMessage);
 
+      if (responseMessage) {
         userHistory.push({ role: 'assistant', content: responseMessage });
         messageHistory.set(senderId, userHistory);
 
@@ -78,4 +73,4 @@ module.exports = {
     }
   }
 };
-                            
+          
