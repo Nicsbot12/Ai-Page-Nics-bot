@@ -1,6 +1,6 @@
 const Groq = require('groq-sdk');
 
-const groq = new Groq({ apiKey: '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' });
+const groq = new Groq({ apiKey: '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' });
 
 const messageHistory = new Map();
 const maxMessageLength = 2000;
