@@ -1,6 +1,6 @@
 const Groq = require('groq-sdk');
 
-const groq = new Groq({ apiKey: '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' });
+const groq = new Groq({ apiKey: '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' });
 
 const messageHistory = new Map();
 const maxMessageLength = 2000;
@@ -36,7 +36,7 @@ module.exports = {
         messages: userHistory,
         model: 'llama3-8b-8192',
         temperature: 1,
-        max_tokens: 1025, // You can increase this limit if necessary
+        max_tokens: 1024, // You can increase this limit if necessary
         top_p: 1,
         stream: true,
         stop: null
