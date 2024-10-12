@@ -1,6 +1,5 @@
-const Groq = require('groq-sdk');
-
-const groq = new Groq({ apiKey: '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' });
+const Gemini = require('gemini-sdk'); // Replace with actual Gemini SDK
+const gemini = new Gemini({ apiKey: 'AIzaSyDuPD1wDOOPPfEJLo1xp2NGt74JzL7Wz_c' }); // Using environment variables for API key security
 
 const messageHistory = new Map();
 const maxMessageLength = 2000;
@@ -14,12 +13,23 @@ function splitMessageIntoChunks(text, maxLength) {
   return messages;
 }
 
+// Function to analyze an image
+async function analyzeImage(imageUrl) {
+  try {
+    const analysisResult = await gemini.image.analyze({ imageUrl });
+    return analysisResult;
+  } catch (error) {
+    console.error('Error analyzing image:', error.message);
+    return null;
+  }
+}
+
 module.exports = {
   name: 'ai',
-  description: 'response within seconds',
+  description: 'response within seconds, with image analysis capabilities',
   author: 'Nics',
 
-  async execute(senderId, messageText, pageAccessToken, sendMessage) {
+  async execute(senderId, messageText, pageAccessToken, sendMessage, imageUrl = null) {
     try {
       console.log("User Message:", messageText);
 
@@ -32,11 +42,22 @@ module.exports = {
       }
       userHistory.push({ role: 'user', content: messageText });
 
-      const chatCompletion = await groq.chat.completions.create({
+      // Check if the user has sent an image for analysis
+      if (imageUrl) {
+        const imageAnalysis = await analyzeImage(imageUrl);
+        if (imageAnalysis) {
+          sendMessage(senderId, { text: `Image analysis result: ${JSON.stringify(imageAnalysis)}` }, pageAccessToken);
+        } else {
+          sendMessage(senderId, { text: "Failed to analyze the image." }, pageAccessToken);
+        }
+      }
+
+      // Fetch a text completion from Gemini
+      const chatCompletion = await gemini.chat.completions.create({
         messages: userHistory,
-        model: 'llama3-8b-8192',
+        model: 'gemini3-8b',  // Gemini model
         temperature: 1,
-        max_tokens: 1025, // You can increase this limit if necessary
+        max_tokens: 1025,
         top_p: 1,
         stream: true,
         stop: null
@@ -67,13 +88,12 @@ module.exports = {
         messageHistory.set(senderId, userHistory);
         sendMessage(senderId, { text: responseMessage }, pageAccessToken);
       } else {
-        throw new Error("Received empty response from Groq.");
+        throw new Error("Received empty response from Gemini.");
       }
 
     } catch (error) {
-      console.error('Error communicating with Groq:', error.message);
+      console.error('Error communicating with Gemini:', error.message);
       sendMessage(senderId, { text: "I'm busy right now, please try again later." }, pageAccessToken);
     }
   }
 };
-          
