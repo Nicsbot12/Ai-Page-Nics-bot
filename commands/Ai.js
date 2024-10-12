@@ -23,11 +23,12 @@ module.exports = {
     try {
       console.log("User Message:", messageText);
 
+      // Send an empty message to indicate processing
       sendMessage(senderId, { text: '' }, pageAccessToken);
 
       let userHistory = messageHistory.get(senderId) || [];
       if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'Your name is Nics Bot, Created by Nico Adajar.' });
+        userHistory.push({ role: 'system', content: 'Your name is Nics Bot, created by Nico Adajar.' });
       }
       userHistory.push({ role: 'user', content: messageText });
 
@@ -35,7 +36,7 @@ module.exports = {
         messages: userHistory,
         model: 'llama3-8b-8192',
         temperature: 1,
-        max_tokens: 1024, // You can increase this limit if necessary
+        max_tokens: 1025, // You can increase this limit if necessary
         top_p: 1,
         stream: true,
         stop: null
@@ -44,7 +45,7 @@ module.exports = {
       let responseMessage = '';
       for await (const chunk of chatCompletion) {
         const chunkContent = chunk.choices[0]?.delta?.content || '';
-        responseMessage += chunkContent;
+        responseMessage += chunkContent; // Compile the complete response
       }
 
       // Log the raw response from the API
@@ -61,7 +62,7 @@ module.exports = {
             sendMessage(senderId, { text: message }, pageAccessToken);
           }
         } else {
-          sendMessage(senderId, { text: responseMessage }, pageAccessToken);
+          sendMessage(senderId, { text: responseMessage }, pageAccessToken); // Send the full response
         }
       } else {
         throw new Error("Received empty response from Groq.");
