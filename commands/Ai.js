@@ -3,70 +3,100 @@ const Groq = require('groq-sdk');
 const groq = new Groq({ apiKey: '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' });
 
 const messageHistory = new Map();
-const maxMessageLength = 2000;
+const maxMessageLength = 2000;  // Set the maximum message length
 
-// Function to split a message into chunks of specified length
+// Function to split a long message into chunks without breaking words
 function splitMessageIntoChunks(text, maxLength) {
-  const messages = [];
-  for (let i = 0; i < text.length; i += maxLength) {
-    messages.push(text.slice(i, i + maxLength));
+  const words = text.split(' '); // Split the text into words
+  const chunks = [];
+  let currentChunk = '';
+
+  for (const word of words) {
+    // Check if adding the next word would exceed the max length
+    if (currentChunk.length + word.length + 1 <= maxLength) {
+      currentChunk += (currentChunk.length ? ' ' : '') + word; // Add a space if the current chunk is not empty
+    } else {
+      // Push the current chunk and start a new one
+      chunks.push(currentChunk);
+      currentChunk = word; // Start a new chunk with the current word
+    }
   }
-  return messages;
+  // Push any remaining words in the last chunk
+  if (currentChunk) {
+    chunks.push(currentChunk);
+  }
+  
+  return chunks;
 }
 
 module.exports = {
   name: 'ai',
-  description: 'response within seconds',
+  description: 'Response within seconds',
   author: 'Nics',
 
   async execute(senderId, messageText, pageAccessToken, sendMessage) {
+    console.log("User Message:", messageText);
+
+    // Send an initial response to the user
+    sendMessage(senderId, { text: '' }, pageAccessToken);
+
     try {
-      console.log("User Message:", messageText);
-
-      // Send an empty message to indicate processing
-      sendMessage(senderId, { text: '' }, pageAccessToken);
-
+      // Initialize user history
       let userHistory = messageHistory.get(senderId) || [];
       if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'Your name is Nics Bot, created by Nico Adajar,.' });
+        userHistory.push({
+          role: 'system',
+          content: 'Your name is Nics Bot and you were created by Nico Adajar'
+        });
       }
       userHistory.push({ role: 'user', content: messageText });
 
-      const chatCompletion = await groq.chat.completions.create({
-        messages: userHistory,
-        model: 'llama3-8b-8192',
-        temperature: 1,
-        max_tokens: 1024, // You can increase this limit if necessary
-        top_p: 1,
-        stream: true,
-        stop: null
-      });
-
+      // Check if the message exceeds the maximum length
       let responseMessage = '';
-      for await (const chunk of chatCompletion) {
-        const chunkContent = chunk.choices[0]?.delta?.content || '';
-        responseMessage += chunkContent; // Compile the complete response
-      }
+      if (messageText.length > maxMessageLength) {
+        const messages = splitMessageIntoChunks(messageText, maxMessageLength);
+        for (const message of messages) {
+          const chatCompletion = await groq.chat.completions.create({
+            messages: [...userHistory, { role: 'user', content: message }],
+            model: 'llama3-8b-8192',
+            temperature: 1,
+            max_tokens: 1024,
+            top_p: 1,
+            stream: true,
+            stop: null
+          });
 
-      // Removed logging of the raw API response
-      // console.log("Raw API Response:", responseMessage);
-
-      if (responseMessage) {
-        userHistory.push({ role: 'assistant', content: responseMessage });
-        messageHistory.set(senderId, userHistory);
-
-        // Check if the response message exceeds the max length
-        if (responseMessage.length > maxMessageLength) {
-          const messages = splitMessageIntoChunks(responseMessage, maxMessageLength);
-          for (const message of messages) {
-            sendMessage(senderId, { text: message }, pageAccessToken);
+          // Collect the response message for each chunk
+          for await (const chunk of chatCompletion) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            responseMessage += content;
           }
-        } else {
-          sendMessage(senderId, { text: responseMessage }, pageAccessToken); // Send the full response
         }
       } else {
-        throw new Error("Received empty response from Groq.");
+        // Request chat completion from Groq for normal message length
+        const chatCompletion = await groq.chat.completions.create({
+          messages: userHistory,
+          model: 'llama3-8b-8192',
+          temperature: 1,
+          max_tokens: 1024,
+          top_p: 1,
+          stream: true,
+          stop: null
+        });
+
+        // Collect the response message
+        for await (const chunk of chatCompletion) {
+          const content = chunk.choices[0]?.delta?.content || '';
+          responseMessage += content;
+        }
       }
+
+      // Update user history with the assistant's response
+      userHistory.push({ role: 'assistant', content: responseMessage });
+      messageHistory.set(senderId, userHistory);
+
+      // Send the final response to the user
+      sendMessage(senderId, { text: responseMessage }, pageAccessToken);
 
     } catch (error) {
       console.error('Error communicating with Groq:', error.message);
