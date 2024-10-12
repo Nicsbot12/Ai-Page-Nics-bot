@@ -5,27 +5,12 @@ const groq = new Groq({ apiKey: 'gsk_pdy6bXDSMCuHKgLiUkseWGdyb3FYeo4VaQBOEKcNJ3f
 const messageHistory = new Map();
 const maxMessageLength = 2000;  // Set the maximum message length
 
-// Function to split a long message into chunks without breaking words
+// Function to split a long message into chunks
 function splitMessageIntoChunks(text, maxLength) {
-  const words = text.split(' '); // Split the text into words
   const chunks = [];
-  let currentChunk = '';
-
-  for (const word of words) {
-    // Check if adding the next word would exceed the max length
-    if (currentChunk.length + word.length + 1 <= maxLength) {
-      currentChunk += (currentChunk.length ? ' ' : '') + word; // Add a space if the current chunk is not empty
-    } else {
-      // Push the current chunk and start a new one
-      chunks.push(currentChunk);
-      currentChunk = word; // Start a new chunk with the current word
-    }
+  for (let i = 0; i < text.length; i += maxLength) {
+    chunks.push(text.substring(i, i + maxLength));
   }
-  // Push any remaining words in the last chunk
-  if (currentChunk) {
-    chunks.push(currentChunk);
-  }
-  
   return chunks;
 }
 
@@ -104,4 +89,4 @@ module.exports = {
     }
   }
 };
-          
+      
