@@ -1,6 +1,6 @@
 const Groq = require('groq-sdk');
 
-const groq = new Groq({ apiKey:'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'});
+const groq = new Groq({ apiKey: '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' });
 
 const messageHistory = new Map();
 const maxMessageLength = 2000;
@@ -12,6 +12,12 @@ function splitMessageIntoChunks(text, maxLength) {
     messages.push(text.slice(i, i + maxLength));
   }
   return messages;
+}
+
+// Function to expand the text (example: adding more content)
+function expandText(text) {
+  // You can modify this function to add more information, context, or formatting
+  return text + "\n\n(Note: This message was expanded for additional clarity.)";
 }
 
 module.exports = {
@@ -27,7 +33,7 @@ module.exports = {
 
       let userHistory = messageHistory.get(senderId) || [];
       if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'Your name is Nics Bot,Created You is Nico Adajar,.' });
+        userHistory.push({ role: 'system', content: 'Your name is Nics Bot, Created by Nico Adajar.' });
       }
       userHistory.push({ role: 'user', content: messageText });
 
@@ -47,6 +53,9 @@ module.exports = {
       }
 
       if (responseMessage) {
+        // Expand the response message before sending
+        responseMessage = expandText(responseMessage);
+
         userHistory.push({ role: 'assistant', content: responseMessage });
         messageHistory.set(senderId, userHistory);
 
@@ -69,4 +78,4 @@ module.exports = {
     }
   }
 };
-          
+                            
