@@ -36,7 +36,7 @@ module.exports = {
         messages: userHistory,
         model: 'llama3-8b-8192',
         temperature: 1,
-        max_tokens: 1024, // You can increase this limit if necessary
+        max_tokens: 1025, // You can increase this limit if necessary
         top_p: 1,
         stream: true,
         stop: null
