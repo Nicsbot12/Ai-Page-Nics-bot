@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 module.exports = {
-  name: 'gpt4o',
+  name: 'imagine',
   description: 'Conversational GPT-4 with image support',
   author: 'Nics',
 
@@ -31,7 +31,7 @@ module.exports = {
             attachment: {
               type: 'image', // Ensure we're sending image type attachments
               payload: {
-                url: att.url, // Send the image URL directly
+                url: att.url, // URL of the image
                 is_reusable: true // Optionally mark the image as reusable
               }
             }
