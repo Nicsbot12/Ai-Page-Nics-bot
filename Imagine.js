@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 module.exports = {
-  name: 'lyrics',
+  name: 'imagine',
   description: 'Fetch song lyrics',
   author: 'Deku (rest api)',
   async execute(senderId, args, pageAccessToken, sendMessage) {
