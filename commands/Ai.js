@@ -6,14 +6,13 @@ const messageHistory = new Map();
 const maxMessageLength = 2000;
 
 // Function to split a message into chunks of specified length
-function splitMessageIntoChunks(text, maxLength) {
-  const messages = [];
-  for (let i = 0; i < text.length; i += maxLength) {
-    messages.push(text.slice(i, i + maxLength));
+function splitMessageIntoChunks(message, chunkSize) {
+  const chunks = [];
+  for (let i = 0; i < message.length; i += chunkSize) {
+    chunks.push(message.slice(i, i + chunkSize));
   }
-  return messages;
+  return chunks;
 }
-
 module.exports = {
   name: 'ai',
   description: 'response within seconds',
