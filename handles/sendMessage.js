@@ -1,15 +1,6 @@
-const axios = require('axios');
+const request = require('request');
 
-/**
- * Sends a message via Facebook Messenger API.
- * @param {string} senderId - The ID of the recipient.
- * @param {Object} message - The message object to send.
- * @param {string} [message.text] - The text of the message (optional).
- * @param {Object} [message.attachment] - The attachment object (optional).
- * @param {string} pageAccessToken - The access token for the Facebook page.
- * @returns {Promise<void>} A promise that resolves when the message is sent.
- */
-async function sendMessage(senderId, message, pageAccessToken) {
+function sendMessage(senderId, message, pageAccessToken) {
   if (!message || (!message.text && !message.attachment)) {
     console.error('Error: Message must provide valid text or attachment.');
     return;
@@ -28,14 +19,47 @@ async function sendMessage(senderId, message, pageAccessToken) {
     payload.message.attachment = message.attachment;
   }
 
-  try {
-    const response = await axios.post(`https://graph.facebook.com/v13.0/me/messages`, payload, {
-      params: { access_token: pageAccessToken },
-    });
-    console.log('Message sent successfully:', response.data);
-  } catch (error) {
-    console.error('Error sending message:', error.message);
-  }
+  console.log(`Sending message to ${senderId}:`, payload);
+
+  request({
+    url: 'https://graph.facebook.com/v13.0/me/messages',
+    qs: { access_token: pageAccessToken },
+    method: 'POST',
+    json: payload,
+  }, (error, response, body) => {
+    if (error) {
+      console.error('Error sending message:', error);
+    } else {
+      if (response.statusCode !== 200) {
+        console.error('Error response:', body.error || response.statusMessage);
+      } else {
+        console.log('Message sent successfully:', body);
+      }
+    }
+  });
 }
 
-module.exports = { sendMessage };
+// Function to simulate typing indicator (you'll need to implement this)
+async function typingIndicator(senderId) {
+  const payload = {
+    recipient: { id: senderId },
+    sender_action: 'typing_on'
+  };
+
+  console.log(`Sending typing indicator to ${senderId}:`, payload);
+  // Here you would send the typing indicator (implement the request similar to sendMessage)
+}
+
+// Function to handle incoming messages
+async function handleMessage(senderId, message, pageAccessToken) {
+  await typingIndicator(senderId);
+  
+  // Simulate some delay to mimic typing
+  setTimeout(async () => {
+    // Your logic to send a response goes here
+    await sendMessage(senderId, { text: 'Here is your response!' }, pageAccessToken); // Call sendMessage with the response
+  }, 2000); // 2-second delay
+}
+
+module.exports = { sendMessage, handleMessage };
+    
