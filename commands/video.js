@@ -16,16 +16,32 @@ module.exports = {
     try {
       const apiUrl = `https://deku-rest-apis.ooguy.com/prn/search/${encodeURIComponent(prompt)}`;
 
-      // Assuming the API returns a URL to the generated video
+      // Fetch the video URL from the API
       const response = await axios.get(apiUrl);
-      const videoUrl = response.data.videoUrl; // Update according to your API's response structure
+      const videoUrl = response.data.videoUrl; // Ensure this is the correct field from your API response
 
-      await sendMessage(senderId, { attachment: { type: 'video', payload: { url: videoUrl } } }, pageAccessToken);
+      if (!videoUrl) {
+        await sendMessage(senderId, { text: 'Error: No video URL returned from the API.' }, pageAccessToken);
+        return;
+      }
 
+      // Prepare the video attachment
+      const videoPayload = {
+        attachment: {
+          type: 'video',
+          payload: {
+            url: videoUrl, // Ensure this is a direct link to the video
+          },
+        },
+      };
+
+      // Send the video message
+      await sendMessage(senderId, videoPayload, pageAccessToken);
+      
     } catch (error) {
       console.error('Error:', error);
-      await sendMessage(senderId, { text: 'Error: Could not generate video.' }, pageAccessToken);
+      await sendMessage(senderId, { text: 'Error: Could not generate video. Please try again later.' }, pageAccessToken);
     }
   }
 };
-      
+  
