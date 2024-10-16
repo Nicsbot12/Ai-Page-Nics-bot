@@ -5,6 +5,7 @@ const { sendMessage } = require('./sendMessage');
 const commands = new Map();
 const prefix = '/';
 
+// Load command files
 const commandFiles = fs.readdirSync(path.join(__dirname, '../commands')).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
   const command = require(`../commands/${file}`);
@@ -31,10 +32,12 @@ async function handleMessage(event, pageAccessToken) {
     return;
   }
 
-  const aiCommand = commands.get('ai');
+  // Split the messageText into an array of arguments for the AI command
+  const aiArgs = messageText.split(' ');
+  const aiCommand = commands.get('gpt4');
   if (aiCommand) {
     try {
-      await aiCommand.execute(senderId, messageText, pageAccessToken, sendMessage);
+      await aiCommand.execute(senderId, aiArgs, pageAccessToken, sendMessage);
     } catch (error) {
       console.error('Error executing Ai command:', error);
       sendMessage(senderId, { text: 'There was an error processing your request.' }, pageAccessToken);
@@ -42,4 +45,4 @@ async function handleMessage(event, pageAccessToken) {
   }
 }
 
-module.exports = { handleMessage }; // Closing the object here
+module.exports = { handleMessage };
