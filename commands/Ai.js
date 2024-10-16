@@ -9,7 +9,7 @@ module.exports = {
     try {
       const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}&uid=100${senderId}`;
       const response = await axios.get(apiUrl);
-      const text = response.data;
+      const text = response.data.content;
 
 console.log('API Response:', text);
 
