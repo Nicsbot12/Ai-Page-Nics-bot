@@ -1,6 +1,6 @@
-const Groq = require('groq-sdk');
+const axios = require('axios');
 
-const groq = new Groq({ apiKey: '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' });
+const apiKey = 'sk-vK3bbt4W4WFTlu1pkjXFzfvJ1qLespSgZODES7D2nfT3BlbkFJXwZPX4nywtBpwa8p31GNhQPeh93UdJUsAIBnjD5x8A'; // Replace with your actual OpenAI API key
 
 const messageHistory = new Map();
 const maxMessageLength = 2000;
@@ -13,12 +13,13 @@ function splitMessageIntoChunks(text, maxLength) {
   }
   return messages;
 }
+
 module.exports = {
   name: 'ai',
   description: 'response within seconds',
   author: 'Nics',
 
-  async execute(senderId, messageText, pageAccessToken, sendMessage) {
+  async execute(senderId, messageText, pageAccessToken, sendMessage, imageUrl) {
     try {
       console.log("User Message:", messageText);
 
@@ -31,19 +32,35 @@ module.exports = {
       }
       userHistory.push({ role: 'user', content: messageText });
 
-      const chatCompletion = await groq.chat.completions.create({
+      let responseMessage = '';
+
+      const apiUrl = 'https://api.openai.com/v1/chat/completions';
+
+      // Prepare request body for GPT-4o
+      const requestBody = {
+        model: 'gpt-4o',
         messages: userHistory,
-        model: 'llama3-8b-8192',
         temperature: 1,
-        max_tokens: 1025, // You can increase this limit if necessary
+        max_tokens: 1025,
         top_p: 1,
         stream: true,
-        stop: null
+      };
+
+      // If an image URL is provided, include it in the request
+      if (imageUrl) {
+        requestBody.image = imageUrl; // Include the image URL for analysis
+      }
+
+      // Call the OpenAI API
+      const response = await axios.post(apiUrl, requestBody, {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
       });
 
-      let responseMessage = '';
-      
-      for await (const chunk of chatCompletion) {
+      // Process the response
+      for await (const chunk of response.data) {
         const chunkContent = chunk.choices[0]?.delta?.content || '';
         responseMessage += chunkContent; // Compile the complete response
         
@@ -66,11 +83,11 @@ module.exports = {
         messageHistory.set(senderId, userHistory);
         sendMessage(senderId, { text: responseMessage }, pageAccessToken);
       } else {
-        throw new Error("Received empty response from Groq.");
+        throw new Error("Received empty response from GPT-4o.");
       }
 
     } catch (error) {
-      console.error('Error communicating with Groq:', error.message);
+      console.error('Error communicating with GPT-4o:', error.message);
       sendMessage(senderId, { text: "I'm busy right now, please try again later." }, pageAccessToken);
     }
   }
