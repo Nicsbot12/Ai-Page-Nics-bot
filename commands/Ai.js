@@ -9,7 +9,7 @@ module.exports = {
     try {
       const apiUrl = `https://markdevs-last-api.onrender.com/gpt4?prompt=${encodeURIComponent(prompt)}&uid=100${senderId}`;
       const response = await axios.get(apiUrl);
-      const text = response.data.content;
+      const text = response.data.gpt4;
 
 console.log('API Response:', text);
 
