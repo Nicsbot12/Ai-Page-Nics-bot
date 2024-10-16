@@ -14,7 +14,7 @@ module.exports = {
     const prompt = args.join(' ');
 
     try {
-      const apiUrl = `https://ccprojectsjonellapis-production.up.railway.app/api/generate-video?prompt=${encodeURIComponent(prompt)}`;
+      const apiUrl = `https://deku-rest-apis.ooguy.com/prn/search/${encodeURIComponent(prompt)}`;
 
       // Assuming the API returns a URL to the generated video
       const response = await axios.get(apiUrl);
