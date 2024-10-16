@@ -27,7 +27,7 @@ module.exports = {
       }
 
       // Remove non-UTF-8 characters if necessary
-      text = text.replace(/[^\x20-\x7E]/g{}", ''); // Remove non-ASCII characters
+      text = text.replace(/[^\x20-\x7E]/g, ''); // Remove non-ASCII characters
 
       // Split the response into chunks if it exceeds 2000 characters
       const maxMessageLength = 2000;
