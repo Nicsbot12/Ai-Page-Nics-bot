@@ -25,18 +25,21 @@ module.exports = {
       if (typeof text !== 'string') {
         text = JSON.stringify(text); // Convert to string if not already
       }
-      
+
       // Remove non-UTF-8 characters if necessary
-      text = text.replace(/[^\x20-\x7E]/g, ''); // Remove non-ASCII characters
+      text = text.replace(/[^\x20-\x7E]/g{}", ''); // Remove non-ASCII characters
 
       // Split the response into chunks if it exceeds 2000 characters
       const maxMessageLength = 2000;
       if (text.length > maxMessageLength) {
         const messages = splitMessageIntoChunks(text, maxMessageLength);
+        console.log(`Sending ${messages.length} messages`); // Debug: number of messages sent
         for (const message of messages) {
+          console.log('Sending message:', message); // Debug: content of each message
           sendMessage(senderId, { text: message }, pageAccessToken);
         }
       } else {
+        console.log('Sending single message:', text); // Debug: content of the single message
         sendMessage(senderId, { text }, pageAccessToken);
       }
     } catch (error) {
@@ -53,3 +56,4 @@ function splitMessageIntoChunks(message, chunkSize) {
   }
   return chunks;
 }
+  
