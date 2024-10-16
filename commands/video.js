@@ -2,7 +2,7 @@ const axios = require('axios');
 const { sendMessage } = require('../handles/sendMessage');
 
 module.exports = {
-  name: 'imagine',
+  name: 'video',
   description: 'Generates a video based on prompt',
   author: 'coffee',
   async execute(senderId, args, pageAccessToken) {
