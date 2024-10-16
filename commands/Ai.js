@@ -38,7 +38,7 @@ module.exports = {
 
       // Prepare request body for GPT-4o
       const requestBody = {
-        model: 'gpt-4o',
+        model: 'gpt-4',
         messages: userHistory,
         temperature: 1,
         max_tokens: 1025,
