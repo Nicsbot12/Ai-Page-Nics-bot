@@ -124,8 +124,5 @@ function sendMessage(senderId, message, pageAccessToken) {
   console.log(`Sending message to ${senderId}:`, message);
 }
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-                                                    
+// Note: Add your existing server configuration and initialization here
+  
