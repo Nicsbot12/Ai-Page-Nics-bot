@@ -11,19 +11,6 @@ for (const file of commandFiles) {
   commands.set(command.name.toLowerCase(), command);
 }
 
-async function typingIndicator(senderId) {
-  try {
-    await axios.post(`https://graph.facebook.com/v13.0/me/messages`, {
-      recipient: { id: senderId },
-      sender_action: 'typing_on',
-    }, {
-      params: { access_token: PAGE_ACCESS_TOKEN },
-    });
-  } catch (error) {
-    console.error('Error sending typing indicator:', error.message);
-  }
-}
-
 async function handleMessage(event, pageAccessToken) {
   const senderId = event.sender.id;
   const messageText = event.message.text.trim();
