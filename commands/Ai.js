@@ -1,6 +1,5 @@
 const Groq = require('groq-sdk');
-// Import your image recognition library or service here
-// const ImageRecognitionService = require('your-image-recognition-service');
+const vision = require('@google-cloud/vision');
 
 const groq = new Groq({ apiKey: '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' });
 
@@ -16,12 +15,14 @@ function splitMessageIntoChunks(text, maxLength) {
   return messages;
 }
 
-// Hypothetical function for image recognition
+// Initialize the Vision API client
+const client = new vision.ImageAnnotatorClient();
+
+// Function to recognize an image using Google Cloud Vision
 async function recognizeImage(imageUrl) {
-  // Replace this with your actual image recognition code
-  // const result = await ImageRecognitionService.recognize(imageUrl);
-  const result = "Recognized image content goes here."; // Placeholder
-  return result;
+  const [result] = await client.textDetection(imageUrl);
+  const detections = result.textAnnotations;
+  return detections.length > 0 ? detections[0].description : 'No text found.';
 }
 
 module.exports = {
@@ -95,4 +96,4 @@ module.exports = {
     }
   }
 };
-                          
+        
