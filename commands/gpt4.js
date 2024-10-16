@@ -10,9 +10,9 @@ module.exports = {
     console.log('Prompt:', prompt); // Optional: Log the prompt for debugging
 
     try {
-      const apiUrl = `https://deku-rest-apis.ooguy.com/gpt4?prompt=${encodeURIComponent(prompt)}&uid=100${senderId}`;
+      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}&uid=100${senderId}`;
       const response = await axios.get(apiUrl);
-      const text = response.data.gpt4;
+      const text = response.data.chatgpt;
 
       // Split the response into chunks if it exceeds 2000 characters
       const maxMessageLength = 2000;
