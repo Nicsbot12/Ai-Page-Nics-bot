@@ -16,10 +16,18 @@ module.exports = {
     try {
       const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}`;
       const response = await axios.get(apiUrl);
-      const text = response.data;
+      let text = response.data;
 
       // Log response for debugging
       console.log('API Response:', text);
+
+      // Ensure text is a UTF-8 encoded string
+      if (typeof text !== 'string') {
+        text = JSON.stringify(text); // Convert to string if not already
+      }
+      
+      // Remove non-UTF-8 characters if necessary
+      text = text.replace(/[^\x20-\x7E]/g, ''); // Remove non-ASCII characters
 
       // Split the response into chunks if it exceeds 2000 characters
       const maxMessageLength = 2000;
