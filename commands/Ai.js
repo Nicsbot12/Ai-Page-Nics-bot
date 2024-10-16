@@ -1,7 +1,5 @@
 const Groq = require('groq-sdk');
-const vision = require('@google-cloud/vision');
 
-// Initialize Groq with your API key
 const groq = new Groq({ apiKey: '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' });
 
 const messageHistory = new Map();
@@ -15,19 +13,6 @@ function splitMessageIntoChunks(text, maxLength) {
   }
   return messages;
 }
-
-// Initialize the Vision API client
-const client = new vision.ImageAnnotatorClient();
-
-// Function to recognize an image using Google Cloud Vision
-async function recognizeImage(imageUrl) {
-  console.log("Recognizing image at URL:", imageUrl);
-  const [result] = await client.textDetection(imageUrl);
-  const detections = result.textAnnotations;
-  console.log("Recognition result:", detections);
-  return detections.length > 0 ? detections[0].description : 'No text found.';
-}
-
 module.exports = {
   name: 'ai',
   description: 'response within seconds',
@@ -46,28 +31,18 @@ module.exports = {
       }
       userHistory.push({ role: 'user', content: messageText });
 
-      // Check if the message contains an image URL (enhanced check)
-      const imageUrlPattern = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|svg))/i;
-      if (imageUrlPattern.test(messageText)) {
-        const recognizedContent = await recognizeImage(messageText);
-        userHistory.push({ role: 'assistant', content: recognizedContent });
-        messageHistory.set(senderId, userHistory);
-        return sendMessage(senderId, { text: recognizedContent }, pageAccessToken);
-      }
-
-      // Call Groq chat completion
       const chatCompletion = await groq.chat.completions.create({
         messages: userHistory,
         model: 'llama3-8b-8192',
         temperature: 1,
-        max_tokens: 1025,
+        max_tokens: 1025, // You can increase this limit if necessary
         top_p: 1,
         stream: true,
         stop: null
       });
 
       let responseMessage = '';
-
+      
       for await (const chunk of chatCompletion) {
         const chunkContent = chunk.choices[0]?.delta?.content || '';
         responseMessage += chunkContent; // Compile the complete response
@@ -95,9 +70,8 @@ module.exports = {
       }
 
     } catch (error) {
-      console.error('Error communicating with Groq:', error);
+      console.error('Error communicating with Groq:', error.message);
       sendMessage(senderId, { text: "I'm busy right now, please try again later." }, pageAccessToken);
     }
   }
 };
-                           
