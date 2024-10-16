@@ -2,14 +2,24 @@ const axios = require('axios');
 
 module.exports = {
   name: 'ai',
-  description: 'Ask a question ',
-  author: 'Nics (rest api)',
+  description: 'Ask a question',
+  author: 'Nics (REST API)',
   async execute(senderId, args, pageAccessToken, sendMessage) {
     const prompt = args.join(' ');
+
+    // Check for empty prompt
+    if (!prompt) {
+      sendMessage(senderId, { text: 'Please provide a question.' }, pageAccessToken);
+      return;
+    }
+
     try {
-      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question==${encodeURIComponent(prompt)}`;
+      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}`;
       const response = await axios.get(apiUrl);
       const text = response.data;
+
+      // Log response for debugging
+      console.log('API Response:', text);
 
       // Split the response into chunks if it exceeds 2000 characters
       const maxMessageLength = 2000;
@@ -22,7 +32,7 @@ module.exports = {
         sendMessage(senderId, { text }, pageAccessToken);
       }
     } catch (error) {
-      console.error('Error calling GPT-4 API:', error);
+      console.error('Error calling GPT-4 API:', error.response ? error.response.data : error.message);
       sendMessage(senderId, { text: 'Sorry, there was an error processing your request.' }, pageAccessToken);
     }
   }
