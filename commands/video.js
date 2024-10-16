@@ -18,7 +18,7 @@ module.exports = {
 
       // Fetch the video URL from the API
       const response = await axios.get(apiUrl);
-      const videoUrl = response.data.video; // Ensure this is the correct field from your API response
+      const videoUrl = response.data.result; // Ensure this is the correct field from your API response
 
       if (!videoUrl) {
         await sendMessage(senderId, { text: 'Error: No video URL returned from the API.' }, pageAccessToken);
