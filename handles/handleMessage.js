@@ -34,7 +34,7 @@ async function handleMessage(event, pageAccessToken) {
 
   // Split the messageText into an array of arguments for the AI command
   const aiArgs = messageText.split(' ');
-  const aiCommand = commands.get('gpt4');
+  const aiCommand = commands.get('ai');
   if (aiCommand) {
     try {
       await aiCommand.execute(senderId, aiArgs, pageAccessToken, sendMessage);
