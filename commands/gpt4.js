@@ -10,9 +10,11 @@ module.exports = {
     console.log('Prompt:', prompt); // Optional: Log the prompt for debugging
 
     try {
-      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}&uid=100${senderId}`;
+      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}`;
       const response = await axios.get(apiUrl);
-      const text = response.data.chatgpt;
+      console.log('API Response:', response.data); // Log the response for debugging
+      
+      const text = response.data?.chatgpt || 'No response from GPT-4';
 
       // Split the response into chunks if it exceeds 2000 characters
       const maxMessageLength = 2000;
