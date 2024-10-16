@@ -1,5 +1,5 @@
 const request = require('request');
-
+const axios = require('axios')
 function sendMessage(senderId, message, pageAccessToken) {
   if (!message || (!message.text && !message.attachment)) {
     console.error('Error: Message must provide valid text or attachment.');
@@ -33,6 +33,18 @@ function sendMessage(senderId, message, pageAccessToken) {
       console.log('Message sent successfully:', body);
     }
   });
+}
+async function sendMessage(recipientId, message, pageAccessToken) {
+  try {
+    await axios.post(`https://graph.facebook.com/v13.0/me/messages`, {
+      recipient: { id: recipientId },
+      message,
+    }, {
+      params: { access_token: pageAccessToken },
+    });
+  } catch (error) {
+    console.error('Error sending message:', error.message);
+  }
 }
 
 module.exports = { sendMessage };
