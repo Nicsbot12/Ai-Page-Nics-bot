@@ -5,7 +5,7 @@ async function typingIndicator(senderId, pageAccessToken) {
   try {
     await axios.post(`https://graph.facebook.com/v13.0/me/messages`, {
       recipient: { id: senderId },
-      sender_action: 'typing_on',
+      sender_action: 'typing_off',
     }, {
       params: { access_token: pageAccessToken },
     });
@@ -53,4 +53,3 @@ async function sendMessage(senderId, message, pageAccessToken) {
 }
 
 module.exports = { sendMessage };
-      
