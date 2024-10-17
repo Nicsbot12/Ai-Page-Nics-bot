@@ -7,9 +7,9 @@ module.exports = {
   async execute(senderId, args, pageAccessToken, sendMessage) {
     const prompt = args.join(' ');
     try {
-      const apiUrl = `https://markdevs-last-api.onrender.com/gpt4?prompt=${encodeURIComponent(prompt)}&uid=100${senderId}`;
+      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}&uid=100${senderId}`;
       const response = await axios.get(apiUrl);
-      const text = response.data.gpt4;
+      const text = response.data.content;
 
 console.log('API Response:', text);
 
