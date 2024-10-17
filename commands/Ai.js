@@ -1,53 +1,23 @@
-const axios = require('axios');
+const express = require('express');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-module.exports = {
-  name: 'ai',
-  description: 'Ask a question to GPT-4',
-  author: 'Nics (rest api)',
-  async execute(senderId, args, pageAccessToken, sendMessage) {
-    const prompt = args.join(' ');
+const router = express.Router();
+const apiKey = "AIzaSyBpB8_1oyp_zTO6NsbDjNpjMOoN7mm3CB4";
+const genAI = new GoogleGenerativeAI(apiKey);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+router.get('/gen', async (req, res) => {
     try {
-      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}&uid=100${senderId}`;
-      const response = await axios.get(apiUrl);
-      const text = response.data.content;
+        const { ask } = req.query;
 
-      console.log('API Response:', text);
+        const result = await model.generateContent(ask);
+        const response = await result.response;
+        const text = await response.text();
 
-      // Split the response into chunks if it exceeds 2000 characters
-      const maxMessageLength = 2000;
-      if (text.length > maxMessageLength) {
-        const messages = splitMessageIntoChunks(text, maxMessageLength);
-        for (const message of messages) {
-          sendMessage(senderId, { text: message }, pageAccessToken);
-        }
-      } else {
-        sendMessage(senderId, { text }, pageAccessToken);
-      }
+        res.json({ result: text });
     } catch (error) {
-      console.error('Error calling GPT-4 API:', error);
-      sendMessage(senderId, { text: 'Sorry, there was an error processing your request.' }, pageAccessToken);
+        res.status(500).json({ error: error.message });
     }
-  }
-};
+});
 
-function splitMessageIntoChunks(message, chunkSize) {
-  const chunks = [];
-  let currentChunk = '';
-
-  const words = message.split(' '); // Split the message by spaces (words)
-  
-  for (const word of words) {
-    if (currentChunk.length + word.length + 1 > chunkSize) {
-      chunks.push(currentChunk); // Add the current chunk to chunks
-      currentChunk = word; // Start a new chunk with the current word
-    } else {
-      currentChunk += (currentChunk.length ? ' ' : '') + word; // Append the word to the current chunk
-    }
-  }
-  
-  if (currentChunk.length) {
-    chunks.push(currentChunk); // Push the last chunk if it exists
-  }
-
-  return chunks;
-      }
+module.exports = router;
