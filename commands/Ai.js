@@ -7,7 +7,7 @@ module.exports = {
   author: 'Nics (rest api)',
   
   async execute(senderId, args, pageAccessToken, sendMessage) {
-    const apiKey = "AIzaSyBpB8_1oyp_zTO6NsbDjNpjMOoN7mm3CB4";
+    const apiKey = "AIzaSyDuPD1wDOOPPfEJLo1xp2NGt74JzL7Wz_c";
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
