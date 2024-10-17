@@ -15,8 +15,8 @@ async function typingIndicator(senderId, pageAccessToken) {
 }
 
 async function sendMessage(senderId, message, pageAccessToken) {
-  if (!message || (!message.text && !message.attachment)) {
-    console.error('Error: Message must provide valid text or attachment.');
+  if (!message || (!message.text && !message.attachment && !message.quick_replies)) {
+    console.error('Error: Message must provide valid text, attachment, or quick replies.');
     return;
   }
 
@@ -34,6 +34,11 @@ async function sendMessage(senderId, message, pageAccessToken) {
 
   if (message.attachment) {
     payload.message.attachment = message.attachment;
+  }
+
+  // Add quick replies to the payload if provided
+  if (message.quick_replies) {
+    payload.message.quick_replies = message.quick_replies;
   }
 
   request({
