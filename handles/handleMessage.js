@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { sendMessage } = require('./sendMessage');
+const { sendQuickReplies } = require('./sendQuickReplies'); // Ensure you import the function
 
 const commands = new Map();
 const prefix = '/';
@@ -32,6 +33,12 @@ async function handleMessage(event, pageAccessToken) {
     return;
   }
 
+  // If message is "/start", send quick replies
+  if (messageText === '/start') {
+    await sendQuickReplies(senderId, pageAccessToken);  // Call quick replies here
+    return;
+  }
+
   // Split the messageText into an array of arguments for the AI command
   const aiArgs = messageText.split(' ');
   const aiCommand = commands.get('ai');
@@ -39,10 +46,11 @@ async function handleMessage(event, pageAccessToken) {
     try {
       await aiCommand.execute(senderId, aiArgs, pageAccessToken, sendMessage);
     } catch (error) {
-      console.error('Error executing Ai command:', error);
+      console.error('Error executing AI command:', error);
       sendMessage(senderId, { text: 'There was an error processing your request.' }, pageAccessToken);
     }
   }
 }
 
 module.exports = { handleMessage };
+    
