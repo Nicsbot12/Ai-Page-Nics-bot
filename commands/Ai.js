@@ -1,19 +1,27 @@
-const axios = require('axios');
+const express = require('express');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 module.exports = {
   name: 'ai',
-  description: 'Ask a question to GPT-4',
+  description: 'Ask a question to Gemini-1.5 (Google Generative AI)',
   author: 'Nics (rest api)',
+  
   async execute(senderId, args, pageAccessToken, sendMessage) {
+    const apiKey = "AIzaSyBpB8_1oyp_zTO6NsbDjNpjMOoN7mm3CB4";
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
     const prompt = args.join(' ');
+    
     try {
-      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}&uid=100${senderId}`;
-      const response = await axios.get(apiUrl);
-      const text = response.data.content;
+      // Generate AI response using Google Generative AI
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = await response.text();
+      
+      console.log('AI Response:', text);
 
-console.log('API Response:', text);
-
-      // Split the response into chunks if it exceeds 2000 characters
+      // Split the response if it exceeds 2000 characters
       const maxMessageLength = 2000;
       if (text.length > maxMessageLength) {
         const messages = splitMessageIntoChunks(text, maxMessageLength);
@@ -24,16 +32,18 @@ console.log('API Response:', text);
         sendMessage(senderId, { text }, pageAccessToken);
       }
     } catch (error) {
-      console.error('Error calling GPT-4 API:', error);
+      console.error('Error generating AI response:', error);
       sendMessage(senderId, { text: 'Sorry, there was an error processing your request.' }, pageAccessToken);
     }
   }
 };
 
+// Helper function to split a long message into chunks
 function splitMessageIntoChunks(message, chunkSize) {
   const chunks = [];
   for (let i = 0; i < message.length; i += chunkSize) {
     chunks.push(message.slice(i, i + chunkSize));
   }
   return chunks;
-       }
+}
+  
