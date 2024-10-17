@@ -1,99 +1,39 @@
-const axios = require('axios'); // Use axios to call OpenAI API
-const tesseract = require('tesseract.js'); // For image recognition (OCR)
-
-// Message history to keep track of conversations
-const messageHistory = new Map();
-const maxMessageLength = 2000;
-
-// Function to split a message into chunks of specified length
-function splitMessageIntoChunks(text, maxLength) {
-  const messages = [];
-  for (let i = 0; i < text.length; i += maxLength) {
-    messages.push(text.slice(i, i + maxLength));
-  }
-  return messages;
-}
-
-// Function to recognize text in an image
-async function recognizeImage(imagePath) {
-  try {
-    const result = await tesseract.recognize(imagePath);
-    return result.data.text;
-  } catch (err) {
-    console.error('Image recognition failed:', err);
-    return '';
-  }
-}
-
-// OpenAI GPT-4 Turbo API call function
-async function callGpt4Turbo(userHistory) {
-  try {
-    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-      model: 'gpt-4-turbo', // Using GPT-4 Turbo model
-      messages: userHistory,
-      max_tokens: 1024,
-      temperature: 1,
-      top_p: 1,
-      stream: true,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`, // Use environment variable
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data.choices[0].message.content;
-  } catch (error) {
-    if (error.response) {
-      // Log the error response from the API
-      console.error('Error calling GPT-4 Turbo:', error.response.data);
-    } else {
-      console.error('Error calling GPT-4 Turbo:', error.message);
-    }
-    throw error;
-  }
-}
+const axios = require('axios');
 
 module.exports = {
   name: 'ai',
-  description: 'Response within seconds',
-  author: 'Nics',
-
-  async execute(senderId, messageText, pageAccessToken, sendMessage, imagePath = null) {
+  description: 'Ask a question to GPT-4',
+  author: 'Nics (rest api)',
+  async execute(senderId, args, pageAccessToken, sendMessage) {
+    const prompt = args.join(' ');
     try {
-      console.log("User Message:", messageText);
+      const apiUrl = `https://nics-api.onrender.com/api/chatgpt?question=${encodeURIComponent(prompt)}&uid=100${senderId}`;
+      const response = await axios.get(apiUrl);
+      const text = response.data.content;
 
-      // Send an empty message to indicate processing
-      sendMessage(senderId, { text: '' }, pageAccessToken);
+console.log('API Response:', text);
 
-      let userHistory = messageHistory.get(senderId) || [];
-      if (userHistory.length === 0) {
-        userHistory.push({ role: 'system', content: 'Your name is Nics Bot, created by Nico Adajar.' });
+      // Split the response into chunks if it exceeds 2000 characters
+      const maxMessageLength = 2000;
+      if (text.length > maxMessageLength) {
+        const messages = splitMessageIntoChunks(text, maxMessageLength);
+        for (const message of messages) {
+          sendMessage(senderId, { text: message }, pageAccessToken);
+        }
+      } else {
+        sendMessage(senderId, { text }, pageAccessToken);
       }
-      userHistory.push({ role: 'user', content: messageText });
-
-      // If an image path is provided, recognize text in the image
-      if (imagePath) {
-        const recognizedText = await recognizeImage(imagePath);
-        userHistory.push({ role: 'user', content: `Recognized Image Text: ${recognizedText}` });
-      }
-
-      // Call GPT-4 Turbo API
-      const responseMessage = await callGpt4Turbo(userHistory);
-
-      // Split long responses into chunks if necessary
-      const messages = splitMessageIntoChunks(responseMessage, maxMessageLength);
-      for (const message of messages) {
-        sendMessage(senderId, { text: message }, pageAccessToken); // Send each chunk
-      }
-
-      // Update message history
-      userHistory.push({ role: 'assistant', content: responseMessage });
-      messageHistory.set(senderId, userHistory);
-
     } catch (error) {
-      console.error('Error communicating with GPT-4 Turbo:', error.message);
-      sendMessage(senderId, { text: "I'm busy right now, please try again later." }, pageAccessToken);
+      console.error('Error calling GPT-4 API:', error);
+      sendMessage(senderId, { text: 'Sorry, there was an error processing your request.' }, pageAccessToken);
     }
   }
 };
-                    
+
+function splitMessageIntoChunks(message, chunkSize) {
+  const chunks = [];
+  for (let i = 0; i < message.length; i += chunkSize) {
+    chunks.push(message.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
