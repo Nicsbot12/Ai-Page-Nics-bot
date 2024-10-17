@@ -37,20 +37,25 @@ async function callGpt4Turbo(userHistory) {
       stream: true,
     }, {
       headers: {
-        'Authorization': `Bearer your_openai_api_key`,
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`, // Use environment variable
         'Content-Type': 'application/json'
       }
     });
     return response.data.choices[0].message.content;
   } catch (error) {
-    console.error('Error calling GPT-4 Turbo:', error.message);
+    if (error.response) {
+      // Log the error response from the API
+      console.error('Error calling GPT-4 Turbo:', error.response.data);
+    } else {
+      console.error('Error calling GPT-4 Turbo:', error.message);
+    }
     throw error;
   }
 }
 
 module.exports = {
   name: 'ai',
-  description: 'response within seconds',
+  description: 'Response within seconds',
   author: 'Nics',
 
   async execute(senderId, messageText, pageAccessToken, sendMessage, imagePath = null) {
@@ -91,3 +96,4 @@ module.exports = {
     }
   }
 };
+                    
