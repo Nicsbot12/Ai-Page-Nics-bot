@@ -33,8 +33,8 @@ async function handleMessage(event, pageAccessToken) {
     return;
   }
 
-  // If message is "/start", send quick replies
-  if (messageText === '/start') {
+  // If message is "/help", send quick replies
+  if (messageText === '/help') {
     await sendQuickReplies(senderId, pageAccessToken);  // Call quick replies here
     return;
   }
